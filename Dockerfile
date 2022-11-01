@@ -11,3 +11,7 @@ RUN export PYTHONPATH=$PYTHONPATH:$BAKE_HOME
 COPY / .
 RUN python3 /bake/bake.py configure -e "ns-3.34"
 RUN python3 /bake/bake.py deploy -vvv
+
+
+
+dsadasdas
