@@ -28,10 +28,26 @@ NS_LOG_COMPONENT_DEFINE ("task1");
 
 int
 main (int argc, char *argv[])
-{
-    CommandLine cmd(__FILE__);
-    cmd.Parse(argc, argv);
+{   
+    uint32_t configuration = 0;
 
+    CommandLine cmd (__FILE__);
+    cmd.AddValue ("configuration", "Which configuration should be used", configuration);
+
+    cmd.Parse (argc,argv);
+
+    if (configuration == 0) {
+        NS_LOG_INFO ("Install internet stack on all nodes.");
+    }
+
+    if (configuration == 1) {
+        NS_LOG_INFO ("Install internet stack on all nodes.");
+    }
+
+    if (configuration == 2) {
+        NS_LOG_INFO ("Install internet stack on all nodes.");
+    }
+    
     Time::SetResolution (Time::NS);
 
     LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
