@@ -1,66 +1,88 @@
-#include "ns3/applications-module.h"
 #include "ns3/core-module.h"
-#include "ns3/csma-module.h"
-#include "ns3/internet-module.h"
-#include "ns3/ipv4-global-routing-helper.h"
 #include "ns3/network-module.h"
+#include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+#include "ns3/csma-module.h"
 
-// Default Network Topology
+
+
+//                  TOPOLOGY
 //
-//       
-//                                                             
+//                    n4
+//                  / | \ 
+//  n0  n1  n2----n3--n5--n7    n8  n9  
+//  |   |   |       \ | /  |    |   |
+//  =========         n6   ==========
 //
+//
+//
+
+
+
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("FirstScriptExample");
+
+NS_LOG_COMPONENT_DEFINE ("task1");
 
 int
-main(int argc, char* argv[])
+main (int argc, char *argv[])
 {
     CommandLine cmd(__FILE__);
     cmd.Parse(argc, argv);
 
-    uint32_t nCsma = 3;
-//log mancante
-    nCsma = nCsma == 0 ? 1 : nCsma; 
-    NodeContainer csmaNodes;
-    csmaNodes.Create(nCsma); 
+    Time::SetResolution (Time::NS);
 
-    NodeContainer p2pnodes;
-    p2pnodes.Add(csmaNodes.Get(2));
-    p2pnodes.Create(1);
+    LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_INFO);
+    LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_INFO);
+
+    NS_LOG_INFO ("Install internet stack on all nodes.");
+    InternetStackHelper internet;
+
+    // nodes 0, 1, 2 - CSMA LEFT
+    NodeContainer CSMA1_nodes;
+    CSMA1_nodes.Create(3);
+
+    CsmaHelper CSMA1;
+    CSMA1.SetChannelAttribute ("DataRate", StringValue ("25Mbps"));
+    CSMA1.SetChannelAttribute ("Delay", StringValue ("10us"));
     
-    CsmaHelper csma;
-    csma.SetChannelAttribute("DataRate", StringValue("25Mbps"));
-    csma.SetChannelAttribute("Delay", StringValue("10us"));
+    NetDeviceContainer CSMA1_ND = CSMA1.Install(CSMA1_nodes);
 
-    PointToPointHelper pointToPoint;
-    pointToPoint.SetDeviceAttribute("DataRate", StringValue("100Mbps"));
-    pointToPoint.SetChannelAttribute("Delay", StringValue("15us"));
-    
-    NetDeviceContainer csmaDevices;
-    csmaDevices = csma.Install(csmaNodes);
+    internet.Install(CSMA1_nodes);
 
-    NetDeviceContainer p2pdevices;
-    p2pdevices = pointToPoint.Install(p2pnodes);
-
-    InternetStackHelper stack;
-    stack.Install(csmaNodes);
-    stack.Install(p2pnodes);
-    
     Ipv4AddressHelper address;
-    address.SetBase("192.128.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer csmaInterfaces;
-    csmaInterfaces = address.Assign(csmaDevices);
-    address.SetBase("10.1.1.0", "255.255.255.0");
-    Ipv4InterfaceContainer p2pInterfaces;
-    p2pInterfaces = address.Assign(p2pdevices);
- 
-     
+    address.SetBase ("192.128.1.0", "255.255.255.0");
+    Ipv4InterfaceContainer CSMA1_interfaces;
+    CSMA1_interfaces = address.Assign (CSMA1_ND);
 
-    Simulator::Run();
+
+    // nodes 2 and 3
+    NodeContainer n2n3_nodes;
+    n2n3_nodes.Add(CSMA1_nodes.Get(2));
+    n2n3_nodes.Create (1);
+
+    PointToPointHelper n2n3;
+    n2n3.SetDeviceAttribute ("DataRate", StringValue ("100Mbps"));
+    n2n3.SetChannelAttribute ("Delay", StringValue ("15us"));
+
+    NetDeviceContainer n2n3_ND = n2n3.Install(n2n3_nodes);
+
+    internet.Install(n2n3_nodes.Get(1));
+
+    address.SetBase ("10.1.1.0", "255.255.255.252");
+    Ipv4InterfaceContainer n2n3_interfaces;
+    n2n3_interfaces = address.Assign (n2n3_ND);
+
+
+
+    
+	Simulator::Run();
     Simulator::Destroy();
+
     return 0;
 }
+
+
+
