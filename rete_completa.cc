@@ -206,7 +206,7 @@ main (int argc, char *argv[])
        AddressValue remoteAddress(InetSocketAddress(CSMA2_interfaces.GetAddress(0), port));
         
         // AddressValue remoteAddress(InetSocketAddress(GetHubIpv4Address(CSMA2_nodes.Get(2)) , port));
-        CSMA2.Ip
+        
         onOffHelper.SetAttribute("Remote", remoteAddress);
         clientApps.Add(onOffHelper.Install(CSMA2_nodes.Get(2)));
 
