@@ -36,17 +36,7 @@ main (int argc, char *argv[])
 
     cmd.Parse (argc,argv);
 
-    if (configuration == 0) {
-        NS_LOG_INFO ("Install internet stack on all nodes.");
-    }
-
-    if (configuration == 1) {
-        NS_LOG_INFO ("Install internet stack on all nodes.");
-    }
-
-    if (configuration == 2) {
-        NS_LOG_INFO ("Install internet stack on all nodes.");
-    }
+    
     
     Time::SetResolution (Time::NS);
 
@@ -197,6 +187,36 @@ main (int argc, char *argv[])
     Ipv4InterfaceContainer CSMA2_interfaces;
     CSMA2_interfaces = address.Assign (CSMA2_ND);
 
+    if (configuration == 0) {
+        NS_LOG_INFO ("Install internet stack on all nodes.");
+    uint16_t port = 2300;
+    Address hubLocalAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
+    PacketSinkHelper packetSinkHelper("ns3::TcpSocketFactory", hubLocalAddress);
+    ApplicationContainer serverApp = packetSinkHelper.Install(star.GetHub());
+    serverApp.Start(Seconds(3.0));
+    serverApp.Stop(Seconds(15.0));
+
+    OnOffHelper onOffHelper("ns3::TcpSocketFactory", Address());
+    onOffHelper.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
+    onOffHelper.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
+    
+    ApplicationContainer clientApps
+        AddressValue remoteAddress(InetSocketAddress(star.GetHubIpv4Address(i), port));
+        onOffHelper.SetAttribute("Remote", remoteAddress);
+        clientApps.Add(onOffHelper.Install(CSMA2_nodes.Get(2));
+
+      spokeApps.Start(Seconds(3.0));
+      spokeApps.Stop(Seconds(15.0));
+
+    }
+
+    if (configuration == 1) {
+        NS_LOG_INFO ("Install internet stack on all nodes.");
+    }
+
+    if (configuration == 2) {
+        NS_LOG_INFO ("Install internet stack on all nodes.");
+    }
 
     //pointToPoint.EnablePcap("task1-.......", n2n3_ND.Get(1))
     //csma.EnablePcap("task1-........", CSMA1_ND.get(0))
