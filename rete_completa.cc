@@ -209,6 +209,20 @@ main (int argc, char *argv[])
         clientApps.Start(Seconds(3.0));
         clientApps.Stop(Seconds(15.0));
 
+        // PCAP n0
+        CSMA1.EnablePcap("task1-0-n0.pcap", CSMA1_ND.Get(0), true)
+
+        // PCAP n3
+        n2n3.EnablePcap("task1-0-n3.pcap")
+        starN5.EnablePcap("task1-0-n3.pcap", star.GetSpokeNode(0), true)
+
+        // PCAP n7
+        // prova a prendere il node dal CSMA2 NetDevice con ID 0
+        CSMA2.EnablePcap("task1-0-n7.pcap", CSMA2_ND.Get(0), true)
+        n4n7.EnablePcap("task1-0-n7.pcap")
+        n7n6.EnablePcap("task1-0-n7.pcap")
+        starN5.EnablePcap("task1-0-n7.pcap", star.GetSpokeNode(2), true)
+
     }
 
     if (configuration == 1) {
@@ -218,10 +232,6 @@ main (int argc, char *argv[])
     if (configuration == 2) {
         NS_LOG_INFO ("Install internet stack on all nodes.");
     }
-
-    //pointToPoint.EnablePcap("task1-.......", n2n3_ND.Get(1))
-    //csma.EnablePcap("task1-........", CSMA1_ND.get(0))
-    // nodo n7
 
     
 	Simulator::Run();
