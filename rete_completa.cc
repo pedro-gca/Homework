@@ -5,6 +5,7 @@
 #include "ns3/applications-module.h"
 #include "ns3/csma-module.h"
 #include "ns3/point-to-point-layout-module.h"
+#include "ns3/ipv4-global-routing-helper.h"
 
 
 //                  TOPOLOGY
@@ -201,27 +202,31 @@ main (int argc, char *argv[])
         onOffHelper.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
         onOffHelper.SetAttribute("PacketSize", UintegerValue (1300));
         
-        ApplicationContainer clientApps
-        AddressValue remoteAddress(InetSocketAddress(CSMA2_nodes.Get(2) , port));
+        ApplicationContainer clientApps;
+        AddressValue remoteAddress(InetSocketAddress("10.1.1.1" , port));
+        // AddressValue remoteAddress(InetSocketAddress(GetHubIpv4Address(CSMA2_nodes.Get(2)) , port));
+        CSMA2.Ip
         onOffHelper.SetAttribute("Remote", remoteAddress);
-        clientApps.Add(onOffHelper.Install(CSMA2_nodes.Get(2));
+        clientApps.Add(onOffHelper.Install(CSMA2_nodes.Get(2)));
 
         clientApps.Start(Seconds(3.0));
         clientApps.Stop(Seconds(15.0));
 
         // PCAP n0
-        CSMA1.EnablePcap("task1-0-n0.pcap", CSMA1_ND.Get(0), true)
+        //CSMA1.EnablePcap("task1-0-n0.pcap", CSMA1_ND.Get(0), true);
 
         // PCAP n3
-        n2n3.EnablePcap("task1-0-n3.pcap")
-        starN5.EnablePcap("task1-0-n3.pcap", star.GetSpokeNode(0), true)
+        //n2n3.EnablePcap("task1-0-n3.pcap");
+        //starN5.EnablePcap("task1-0-n3.pcap", star.GetSpokeNode(0);
 
         // PCAP n7
         // prova a prendere il node dal CSMA2 NetDevice con ID 0
-        CSMA2.EnablePcap("task1-0-n7.pcap", CSMA2_ND.Get(0), true)
-        n4n7.EnablePcap("task1-0-n7.pcap")
-        n7n6.EnablePcap("task1-0-n7.pcap")
-        starN5.EnablePcap("task1-0-n7.pcap", star.GetSpokeNode(2), true)
+        //CSMA2.EnablePcap("task1-0-n7.pcap", CSMA2_ND.Get(0), true);
+        //n4n7.EnablePcap("task1-0-n7.pcap");
+        //n7n6.EnablePcap("task1-0-n7.pcap");
+        //starN5.EnablePcap("task1-0-n7.pcap", star.GetSpokeNode(2));
+        
+        CSMA1.EnablePcapAll("test");
 
     }
 
