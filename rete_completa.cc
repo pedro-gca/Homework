@@ -205,8 +205,8 @@ main (int argc, char *argv[])
         onOffHelper.SetAttribute("Remote", remoteAddress);
         clientApps.Add(onOffHelper.Install(CSMA2_nodes.Get(2));
 
-      spokeApps.Start(Seconds(3.0));
-      spokeApps.Stop(Seconds(15.0));
+      clientApps.Start(Seconds(3.0));
+      clientApps.Stop(Seconds(15.0));
 
     }
 
