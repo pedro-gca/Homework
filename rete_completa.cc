@@ -231,7 +231,7 @@ main (int argc, char *argv[])
         // Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
         starN5.EnablePcapAll ("star_test");
-        
+         CSMA2.EnablePcap("Csma2_test",CSMA1_ND.Get(2),true);
     }
 
     if (configuration == 1) {
@@ -259,7 +259,7 @@ main (int argc, char *argv[])
         OnOffHelper onOffHelper2 ("ns3::TcpSocketFactory", Address ());
         onOffHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
         onOffHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-        onOffHelper2.SetAttribute("PacketSize",UintegerValue(5000));
+        onOffHelper1.SetAttribute("PacketSize",UintegerValue(5000));
 
         ApplicationContainer clientApps1;
         AddressValue remoteAddress1 (InetSocketAddress (star.GetHubIpv4Address (2), port1));;
@@ -279,12 +279,33 @@ main (int argc, char *argv[])
         clientApps2.Start(Seconds(2.0));
         clientApps2.Stop(Seconds(9.0));
 
-        starN5.EnablePcapAll ("star_test");
-        //CSMA_1.EnablePcap();
+       starN5.EnablePcapAll ("star_test");
+       CSMA1.EnablePcap("Csma1_test",CSMA1_ND.Get(0)); //CSMA_1.EnablePcap();
+       CSMA2.EnablePcap("Csma2_test",CSMA1_ND.Get(1),true);
+       CSMA2.EnablePcap("Csma2_test",CSMA1_ND.Get(2),true);
     }
 
     if (configuration == 2) {
         NS_LOG_INFO ("Install internet stack on all nodes.");
+
+        UdpEchoServerHelper echoServer(63);
+
+    ApplicationContainer serverApps = echoServer.Install(CSMA1_nodes.Get(2));
+    serverApps.Start(Seconds(1.0));
+    serverApps.Stop(Seconds(10.0));
+
+    UdpEchoClientHelper echoClient(CSMA1_interfaces.GetAddress(2), 63);
+    echoClient.SetAttribute("MaxPackets", UintegerValue(5));
+    echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0))); //da cambiare
+    echoClient.SetAttribute("PacketSize", UintegerValue(2560));
+ 
+    ApplicationContainer clientApps = echoClient.Install(CSMA2_nodes.Get(1));
+    clientApps.Start(Seconds(2.0));//da cambiare
+    clientApps.Stop(Seconds(10.0));//da cambiare
+
+    starN5.EnablePcapAll("star test");
+    CSMA2.EnablePcap("csma2 test", CSMA2_ND.Get(1), true);
+
     }
 
     
@@ -298,8 +319,6 @@ main (int argc, char *argv[])
     return 0;
 }
 
-
-}
 
 
 
