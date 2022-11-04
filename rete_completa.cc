@@ -203,17 +203,30 @@ main (int argc, char *argv[])
         onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
         onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
 
-        ApplicationContainer spokeApps;      
-
-        for (uint32_t i = 0; i < star.SpokeCount (); ++i)
-            {
-            AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i), port));
-            onOffHelper.SetAttribute ("Remote", remoteAddress);
-            spokeApps.Add (onOffHelper.Install (star.GetSpokeNode (i)));
-            }
+        //onOffHelper sul n9
+        ApplicationContainer clientApps;
+        AddressValue remoteAddress(InetSocketAddress(CSMA2_interfaces.GetAddress(3), port));//probabilmente è questo l'indirizzo
         
-        spokeApps.Start (Seconds (1.0));
-        spokeApps.Stop (Seconds (10.0));
+        // AddressValue remoteAddress(InetSocketAddress(GetHubIpv4Address(CSMA2_nodes.Get(2)) , port));
+        
+        onOffHelper.SetAttribute("Remote", remoteAddress);
+        clientApps.Add(onOffHelper.Install(CSMA2_nodes.Get(2)));
+
+        clientApps.Start(Seconds(3.0));
+        clientApps.Stop(Seconds(15.0));
+
+        // Per aggiungere onOffHelper sui nodi della star
+        // ApplicationContainer spokeApps;      
+
+        // for (uint32_t i = 0; i < star.SpokeCount (); ++i)
+        //     {
+        //     AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i), port));
+        //     onOffHelper.SetAttribute ("Remote", remoteAddress);
+        //     spokeApps.Add (onOffHelper.Install (star.GetSpokeNode (i)));
+        //     }
+        
+        // spokeApps.Start (Seconds (1.0));
+        // spokeApps.Stop (Seconds (10.0));
 
         // Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
