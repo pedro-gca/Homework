@@ -215,7 +215,7 @@ main (int argc, char *argv[])
         spokeApps.Start (Seconds (1.0));
         spokeApps.Stop (Seconds (10.0));
 
-        Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+        // Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
         starN5.EnablePcapAll ("star_test");
     }
