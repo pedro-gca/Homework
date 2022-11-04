@@ -1,4 +1,4 @@
-##include "ns3/core-module.h"
+#include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
@@ -202,7 +202,7 @@ main (int argc, char *argv[])
         OnOffHelper onOffHelper ("ns3::TcpSocketFactory", Address ());
         onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
         onOffHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-
+        onOffHelper.SetAttribute("PacketSize",UintegerValue(2500));
         //onOffHelper sul n9
         ApplicationContainer clientApps;
          AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (2), port));//Ho cambiato nuovamente il parametro,non definitivo
@@ -254,10 +254,12 @@ main (int argc, char *argv[])
         OnOffHelper onOffHelper1 ("ns3::TcpSocketFactory", Address ());
         onOffHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
         onOffHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+        onOffHelper1.SetAttribute("PacketSize",UintegerValue(2500));
 
         OnOffHelper onOffHelper2 ("ns3::TcpSocketFactory", Address ());
         onOffHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
         onOffHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+        onOffHelper2.SetAttribute("PacketSize",UintegerValue(5000));
 
         ApplicationContainer clientApps1;
         AddressValue remoteAddress1 (InetSocketAddress (star.GetHubIpv4Address (2), port1));;
@@ -294,6 +296,9 @@ main (int argc, char *argv[])
     Simulator::Destroy();
 
     return 0;
+}
+
+
 }
 
 
