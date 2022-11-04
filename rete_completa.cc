@@ -1,4 +1,4 @@
-#include "ns3/core-module.h"
+##include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
@@ -205,7 +205,7 @@ main (int argc, char *argv[])
 
         //onOffHelper sul n9
         ApplicationContainer clientApps;
-         AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (2), port));//Ho cambiato di nuovo il parametro ,non definitivo
+         AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (2), port));//Ho cambiato nuovamente il parametro,non definitivo
         
         // AddressValue remoteAddress(InetSocketAddress(GetHubIpv4Address(CSMA2_nodes.Get(2)) , port));
         
@@ -269,7 +269,7 @@ main (int argc, char *argv[])
         clientApps1.Add(onOffHelper1.Install(CSMA2_nodes.Get(2)));
 
         onOffHelper2.SetAttribute("Remote", remoteAddress1);
-        clientApps1.Add(onOffHelper1.Install(CSMA2_nodes.Get(1)));
+        clientApps2.Add(onOffHelper2.Install(CSMA2_nodes.Get(1)));
 
         clientApps1.Start(Seconds(3.0));
         clientApps1.Stop(Seconds(15.0));
@@ -278,7 +278,7 @@ main (int argc, char *argv[])
         clientApps2.Stop(Seconds(9.0));
 
         starN5.EnablePcapAll ("star_test");
-        CSMA1
+        //CSMA_1.EnablePcap();
     }
 
     if (configuration == 2) {
