@@ -203,7 +203,7 @@ main (int argc, char *argv[])
         onOffHelper.SetAttribute("PacketSize", UintegerValue (1300));
         
         ApplicationContainer clientApps;
-       AddressValue remoteAddress(InetSocketAddress(CSMA2_interfaces.GetAddress(0), port));//probabilmente è questo l'indirizzo
+       AddressValue remoteAddress(InetSocketAddress(CSMA2_interfaces.GetAddress(3), port));//probabilmente è questo l'indirizzo
         
         // AddressValue remoteAddress(InetSocketAddress(GetHubIpv4Address(CSMA2_nodes.Get(2)) , port));
         
