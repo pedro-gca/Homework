@@ -139,8 +139,8 @@ main (int argc, char *argv[])
     // Link n7 n6
     NS_LOG_INFO ("Point to Point n7 - n6");
     NodeContainer n7n6_nodes;
-    n7n6_nodes.Add(star.GetSpokeNode(1));
     n7n6_nodes.Add(star.GetSpokeNode(2));
+    n7n6_nodes.Add(star.GetSpokeNode(3));
 
     
     PointToPointHelper n7n6;
@@ -157,8 +157,8 @@ main (int argc, char *argv[])
     // Link n6 n3
     NS_LOG_INFO ("Point to Point n6 - n3");
     NodeContainer n6n3_nodes;
-    n6n3_nodes.Add(star.GetSpokeNode(1));
-    n6n3_nodes.Add(star.GetSpokeNode(2));
+    n6n3_nodes.Add(star.GetSpokeNode(3));
+    n6n3_nodes.Add(star.GetSpokeNode(0));
 
     
     PointToPointHelper n6n3;
@@ -229,6 +229,10 @@ main (int argc, char *argv[])
     }
 
     
+    AnimationInterface anim("animation.xml");
+    anim.SetConstantPosition(CSMA1_nodes.Get(0), 1.0, 1.0);
+    anim.SetConstantPosition(CSMA1_nodes.Get(1), 1.0, 1.0);
+
 	Simulator::Run();
     Simulator::Destroy();
 
