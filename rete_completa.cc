@@ -173,6 +173,7 @@ main(int argc, char* argv[])
     Ipv4InterfaceContainer CSMA2_interfaces;
     CSMA2_interfaces = address.Assign(CSMA2_ND);
 
+    
     if (configuration == 0)
     {
         NS_LOG_INFO("Install internet stack on all nodes.");
@@ -203,6 +204,8 @@ main(int argc, char* argv[])
         clientApps.Start(Seconds(3.0));
         clientApps.Stop(Seconds(15.0));
         //AGGIORANATO
+         
+
         n2n3.EnablePcap("task1-configuration0-n3.pcap", n2n3_ND.Get(1));
         CSMA1.EnablePcap("task1-configuration0-n0.pcap", CSMA1_ND.Get(0));
         CSMA2.EnablePcap("task1-configuration0-n7.pcap", CSMA2_ND.Get(0));
@@ -231,8 +234,7 @@ main(int argc, char* argv[])
         // Sink n0
         Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
         PacketSinkHelper sinkHelper2("ns3::TcpSocketFactory", sinkAddress2);
-        sinkApp =
-            sinkHelper2.Install(CSMA1_nodes.Get(0)); // Potrebbbe essere necessario un nuovo SinkApp
+        sinkApp = sinkHelper2.Install(CSMA1_nodes.Get(0)); // Potrebbbe essere necessario un nuovo SinkApp
         sinkApp.Start(Seconds(1.0));
         sinkApp.Stop(Seconds(16.0));
 
@@ -288,14 +290,16 @@ main(int argc, char* argv[])
     if (configuration == 2)
     {
         NS_LOG_INFO("Install internet stack on all nodes.");
-
+       uint16_t udpserverport=63;
+       uint16_t tcpsinkport=2300;
         UdpEchoServerHelper echoServer(63);
+
 
         ApplicationContainer serverApps = echoServer.Install(CSMA1_nodes.Get(2));
         serverApps.Start(Seconds(1.0));
         serverApps.Stop(Seconds(10.0));
 
-        UdpEchoClientHelper echoClient(CSMA1_interfaces.GetAddress(2), 63);
+        UdpEchoClientHelper echoClient(CSMA1_interfaces.GetAddress(2), udpserverport);
         echoClient.SetAttribute("MaxPackets", UintegerValue(5));
         echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0))); // da cambiare
         echoClient.SetAttribute("PacketSize", UintegerValue(2560));
@@ -307,6 +311,13 @@ main(int argc, char* argv[])
         n2n3.EnablePcap("task1-configuration2-n3.pcap", n2n3_ND.Get(1));
         CSMA1.EnablePcap("task1-configuration2-n0.pcap", CSMA1_ND.Get(0));
         CSMA2.EnablePcap("task1-configuration2-n7.pcap", CSMA2_ND.Get(0));
+
+         Address sinkTCPAddress(InetSocketAddress(Ipv4Address::GetAny(),tcpsinkport ));
+        PacketSinkHelper sinkTCPHelper("ns3::TcpSocketFactory", sinkTCPAddress);
+        ApplicationContainer sinkTCPApp = sinkTCPHelper.Install(star.GetHub());
+        sinkTCPApp.Start(Seconds(1.0));
+        sinkTCPApp.Stop(Seconds(16.0));
+      //continua  
     }
 
     // AnimationInterface anim("animation.xml");
@@ -316,8 +327,7 @@ main(int argc, char* argv[])
     Simulator::Run();
     Simulator::Destroy();
 
-    return 0;
-
+    return 0;}
 
 
 
