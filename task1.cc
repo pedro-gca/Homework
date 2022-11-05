@@ -319,9 +319,6 @@ main (int argc, char *argv[])
         clientApps.Start(Seconds(3.0));
         clientApps.Stop(Seconds(11.0));
 
-        starN5.EnablePcapAll("star test");
-        CSMA2.EnablePcap("csma2 test", CSMA2_ND.Get(1), true);
-
         // Configurazione TCP sink e TCP onOffClient n5 <- n9
         NS_LOG_INFO ("Configuring TCP sink on n5");
         uint16_t port1 = 2300;
@@ -371,7 +368,7 @@ main (int argc, char *argv[])
 
 
 
-		Ipv4GlobalRoutingHelper::PopulateRoutingTables();
+	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 
        starN5.EnablePcapAll ("task1-configuration1-n5.pcap");
