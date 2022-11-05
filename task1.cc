@@ -325,11 +325,11 @@ main (int argc, char *argv[])
         // Configurazione TCP sink e TCP onOffClient n5 <- n9
         NS_LOG_INFO ("Configuring TCP sink on n5");
         uint16_t port1 = 2300;
-        Address sinkAddress1(InetSocketAddress(Ipv4Address::GetAny(), port1))
+        Address sinkAddress1(InetSocketAddress(Ipv4Address::GetAny(), port1));
         PacketSinkHelper sinkHelper1("ns3::TcpSocketFactory", sinkAddress1);
         ApplicationContainer sinkApp = sinkHelper1.Install(star.GetHub());
-        sinkApp.Start(Seconds 3.0);
-        sinkApp.Stop(Seconds 9.0);
+        sinkApp.Start(Seconds (3.0));
+        sinkApp.Stop(Seconds (9.0));
 
         // OnOffHelper n9
         OnOffHelper onOffHelper1 ("ns3::TcpSocketFactory", Address ());
@@ -348,14 +348,14 @@ main (int argc, char *argv[])
         // Configurazione UDP sink e UDP OnOffClient n0 <- n8
         NS_LOG_INFO ("Configuring TCP sink on n5");
         uint16_t port2 = 7454;
-        Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2))
+        Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
         PacketSinkHelper sinkHelper2("ns3::UdpSocketFactory", sinkAddress2);
-        ApplicationContainer sinkApp = sinkHelper2.Install(star.GetHub());
-        sinkApp.Start(Seconds 5.0);
-        sinkApp.Stop(Seconds 15.0);
+        ApplicationContainer sinkApp2 = sinkHelper2.Install(star.GetHub());
+        sinkApp2.Start(Seconds (5.0));
+        sinkApp2.Stop(Seconds (15.0));
 
         // OnOffHelper n8
-        OnOffHelper onOffHelper2 ("ns3::TcpSocketFactory", Address ());
+        OnOffHelper onOffHelper2 ("ns3::UdpSocketFactory", Address ());
         onOffHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
         onOffHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
         onOffHelper2.SetAttribute("PacketSize",UintegerValue(3000));
