@@ -21,7 +21,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("task1");
+NS_LOG_COMPONENT_DEFINE("Task_1_Team_<57>");
 
 int
 main(int argc, char* argv[])
