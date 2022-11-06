@@ -223,26 +223,12 @@ main (int argc, char *argv[])
         clientApps.Start(Seconds(3.0));
         clientApps.Stop(Seconds(15.0));
 
-        // Per aggiungere onOffHelper sui nodi della star
-        // ApplicationContainer spokeApps;      
+      Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-        // for (uint32_t i = 0; i < star.SpokeCount (); ++i)
-        //     {
-        //     AddressValue remoteAddress (InetSocketAddress (star.GetHubIpv4Address (i), port));
-        //     onOffHelper.SetAttribute ("Remote", remoteAddress);
-        //     spokeApps.Add (onOffHelper.Install (star.GetSpokeNode (i)));
-        //     }
-        
-        // spokeApps.Start (Seconds (1.0));
-        // spokeApps.Stop (Seconds (10.0));
-
-        // Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
-
-        n2n3.EnablePcapAll("task1-configuration0-n3.pcap");//in questo modo vengono tracciati i dispositivi 
-        CSMA1.EnablePcapAll("task1-configuration0-n0.pcap");//di tutti nodi ma a noi servono soltanto su n0 n3 n7
-        CSMA2.EnablePcapAll("task1-configuration0-n7.pcap");
-       // starN5.EnablePcapAll ("star_test0");
-      //  CSMA2.EnablePcap("Csma2_test0",CSMA1_ND.Get(2),true);
+        n2n3.EnablePcap("task1-configuration0-n3.pcap",n2n3_ND.Get(1),true);//in questo modo vengono tracciati i dispositivi 
+        CSMA1.EnablePcap("task1-configuration0-n0.pcap",CSMA1_ND.Get(0),true);//di tutti nodi ma a noi servono soltanto su n0 n3 n7
+        n4n7.EnablePcap("task1-configuration0-n7.pcap",n4n7_nodes.Get(1)->GetId(),0);
+      
         AsciiTraceHelper ascii;
        
         starN5.EnableAscii(ascii.CreateFileStream("task1-configuration0-n5.tr"),
@@ -303,9 +289,11 @@ main (int argc, char *argv[])
         clientApps2.Start(Seconds(2.0));
         clientApps2.Stop(Seconds(9.0));
         
-		n2n3.EnablePcapAll("task1-configuration0-n3.pcap");//in questo modo vengono tracciati i dispositivi 
-        CSMA1.EnablePcapAll("task1-configuration0-n0.pcap");//di tutti nodi ma a noi servono soltanto su n0 n3 n7
-        CSMA2.EnablePcapAll("task1-configuration0-n7.pcap");
+		Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+
+        n2n3.EnablePcap("task1-configuration1-n3.pcap",n2n3_ND.Get(1),true);//in questo modo vengono tracciati i dispositivi 
+        CSMA1.EnablePcap("task1-configuration1-n0.pcap",CSMA1_ND.Get(0),true);//di tutti nodi ma a noi servono soltanto su n0 n3 n7
+        n4n7.EnablePcap("task1-configuration1-n7.pcap",n4n7_nodes.Get(1)->GetId(),0);
 
                  AsciiTraceHelper ascii;
 
@@ -325,16 +313,22 @@ main (int argc, char *argv[])
 
         ApplicationContainer serverApps = echoServer.Install(CSMA1_nodes.Get(2));
         serverApps.Start(Seconds(1.0));
-        serverApps.Stop(Seconds(10.0));
+        serverApps.Stop(Seconds(15.0));
 
         UdpEchoClientHelper echoClient(CSMA1_interfaces.GetAddress(2), 63);
         echoClient.SetAttribute("MaxPackets", UintegerValue(5));
         echoClient.SetAttribute("Interval", TimeValue(Seconds(2.0)));
         echoClient.SetAttribute("PacketSize", UintegerValue(2560));
-    
-        ApplicationContainer clientApps = echoClient.Install(CSMA2_nodes.Get(1));
-        clientApps.Start(Seconds(3.0));
-        clientApps.Stop(Seconds(11.0));
+
+		serverApps = echoClient.Install(CSMA2_nodes.Get(1));
+        echoClient.SetFill(serverApps.Get(0), "teste");
+        
+        //ApplicationContainer clientApps = echoClient.Install(CSMA2_nodes.Get(1));
+        //clientApps.Start(Seconds(3.0));
+        //clientApps.Stop(Seconds(11.0));
+            
+//        echoClient.SetFill(clientApps.Get(1), "1812604");
+
 
         // Configurazione TCP sink e TCP onOffClient n5 <- n9
         NS_LOG_INFO ("Configuring TCP sink on n5");
@@ -343,7 +337,7 @@ main (int argc, char *argv[])
         PacketSinkHelper sinkHelper1("ns3::TcpSocketFactory", sinkAddress1);
         ApplicationContainer sinkApp = sinkHelper1.Install(star.GetHub());
         sinkApp.Start(Seconds (3.0));
-        sinkApp.Stop(Seconds (9.0));
+        sinkApp.Stop(Seconds (14.0));
 
         // OnOffHelper n9
         OnOffHelper onOffHelper1 ("ns3::TcpSocketFactory", Address ());
@@ -358,13 +352,16 @@ main (int argc, char *argv[])
         onOffHelper1.SetAttribute("Remote", remoteAddress1);
         clientApps1.Add(onOffHelper1.Install(CSMA2_nodes.Get(2)));
 
+        clientApps1.Start(Seconds(3.0));
+        clientApps1.Stop(Seconds(9.0));
+
 
         // Configurazione UDP sink e UDP OnOffClient n0 <- n8
-        NS_LOG_INFO ("Configuring TCP sink on n5");
+        NS_LOG_INFO ("Configuring UDP sink on n0");
         uint16_t port2 = 7454;
         Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
         PacketSinkHelper sinkHelper2("ns3::UdpSocketFactory", sinkAddress2);
-        ApplicationContainer sinkApp2 = sinkHelper2.Install(star.GetHub());
+        ApplicationContainer sinkApp2 = sinkHelper2.Install(CSMA1_nodes.Get(0));
         sinkApp2.Start(Seconds (5.0));
         sinkApp2.Stop(Seconds (15.0));
 
@@ -381,14 +378,14 @@ main (int argc, char *argv[])
         onOffHelper2.SetAttribute("Remote", remoteAddress2);
         clientApps2.Add(onOffHelper2.Install(CSMA2_nodes.Get(1)));
 
+        clientApps2.Start(Seconds(5.0));
+        clientApps2.Stop(Seconds(15.0));
+		
+        Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
-
-
-
-	    n2n3.EnablePcapAll("task1-configuration2-n3.pcap");//in questo modo vengono tracciati i dispositivi 
-        CSMA1.EnablePcapAll("task1-configuration2-n0.pcap");//di tutti nodi ma a noi servono soltanto su n0 n3 n7
-        CSMA2.EnablePcapAll("task1-configuration2-n7.pcap");
-          
+        n2n3.EnablePcap("task1-configuration2-n3.pcap",n2n3_ND.Get(1),true);
+        CSMA1.EnablePcap("task1-configuration2-n0.pcap",CSMA1_ND.Get(0),true);
+        n4n7.EnablePcap("task1-configuration2-n7.pcap",n4n7_nodes.Get(1)->GetId(),0);
         
                  AsciiTraceHelper ascii;
 
@@ -409,6 +406,3 @@ main (int argc, char *argv[])
 
     return 0;
 }
-
-
-
