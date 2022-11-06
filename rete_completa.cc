@@ -74,7 +74,7 @@ main (int argc, char *argv[])
 
     PointToPointHelper starN5;
     starN5.SetDeviceAttribute ("DataRate", StringValue ("80Mbps"));
-    starN5.SetChannelAttribute ("Delay", StringValue ("5s"));
+    starN5.SetChannelAttribute ("Delay", StringValue ("5us"));
 
     PointToPointStarHelper star (nSpokes, starN5);
 
