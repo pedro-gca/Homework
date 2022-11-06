@@ -1,4 +1,4 @@
-##include "ns3/core-module.h"
+#include "ns3/core-module.h"
 #include "ns3/network-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/point-to-point-module.h"
@@ -385,10 +385,18 @@ main (int argc, char *argv[])
 
 
 
-	    n2n3.EnablePcapAll("task1-configuration0-n3.pcap");//in questo modo vengono tracciati i dispositivi 
-        CSMA1.EnablePcapAll("task1-configuration0-n0.pcap");//di tutti nodi ma a noi servono soltanto su n0 n3 n7
-        CSMA2.EnablePcapAll("task1-configuration0-n7.pcap");
-     
+	    n2n3.EnablePcapAll("task1-configuration2-n3.pcap");//in questo modo vengono tracciati i dispositivi 
+        CSMA1.EnablePcapAll("task1-configuration2-n0.pcap");//di tutti nodi ma a noi servono soltanto su n0 n3 n7
+        CSMA2.EnablePcapAll("task1-configuration2-n7.pcap");
+          
+        
+                 AsciiTraceHelper ascii;
+
+        starN5.EnableAscii(ascii.CreateFileStream("task1-configuration2-n5.tr"), NodeContainer(star.GetHub()));
+        CSMA1.EnableAscii(ascii.CreateFileStream("task1-configuration2-n8.tr"),NodeContainer(CSMA1_nodes.Get(2)));
+        CSMA2.EnableAscii(ascii.CreateFileStream("task1-configuration2-n8.tr"),NodeContainer(CSMA2_nodes.Get(1)));  
+        CSMA2.EnableAscii(ascii.CreateFileStream("task1-configuration2-n9.tr"),NodeContainer(CSMA2_nodes.Get(2)));
+
     }
 
     
