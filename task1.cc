@@ -291,10 +291,16 @@ main (int argc, char *argv[])
         echoClient.SetAttribute("MaxPackets", UintegerValue(5));
         echoClient.SetAttribute("Interval", TimeValue(Seconds(2.0)));
         echoClient.SetAttribute("PacketSize", UintegerValue(2560));
-    
-        ApplicationContainer clientApps = echoClient.Install(CSMA2_nodes.Get(1));
-        clientApps.Start(Seconds(3.0));
-        clientApps.Stop(Seconds(11.0));
+
+		serverApps = echoClient.Install(CSMA2_nodes.Get(1));
+        echoClient.SetFill(serverApps.Get(0), "teste");
+        
+        //ApplicationContainer clientApps = echoClient.Install(CSMA2_nodes.Get(1));
+        //clientApps.Start(Seconds(3.0));
+        //clientApps.Stop(Seconds(11.0));
+            
+//        echoClient.SetFill(clientApps.Get(1), "1812604");
+
 
         // Configurazione TCP sink e TCP onOffClient n5 <- n9
         NS_LOG_INFO ("Configuring TCP sink on n5");
