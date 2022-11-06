@@ -188,16 +188,24 @@ main (int argc, char *argv[])
     address.SetBase ("192.128.2.0", "255.255.255.0");
     Ipv4InterfaceContainer CSMA2_interfaces;
     CSMA2_interfaces = address.Assign (CSMA2_ND);
-
     if (configuration == 0) {
         NS_LOG_INFO ("Install internet stack on all nodes.");
         
+                // certo
+        // uint16_t port = 2300;
+        // Address sinkAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
+        // PacketSinkHelper sinkHelper("ns3::TcpSocketFactory", sinkAddress);
+        // ApplicationContainer sinkApp = sinkHelper.Install(star.GetHub());
+        // sinkApp.Start(Seconds(1.0));
+        // sinkApp.Start(Seconds(10.0));  
+
+        // teste
         uint16_t port = 2300;
-        Address sinkAddress(InetSocketAddress(Ipv4Address::GetAny(), port));
+        Address sinkAddress(InetSocketAddress("0.0.0.0", port));
         PacketSinkHelper sinkHelper("ns3::TcpSocketFactory", sinkAddress);
         ApplicationContainer sinkApp = sinkHelper.Install(star.GetHub());
         sinkApp.Start(Seconds(1.0));
-        sinkApp.Start(Seconds(10.0));  
+        sinkApp.Start(Seconds(10.0));   
 
         OnOffHelper onOffHelper ("ns3::TcpSocketFactory", Address ());
         onOffHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
@@ -228,10 +236,11 @@ main (int argc, char *argv[])
         // spokeApps.Start (Seconds (1.0));
         // spokeApps.Stop (Seconds (10.0));
 
-        // Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+         Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 
-        starN5.EnablePcapAll ("star_test");
-         CSMA2.EnablePcap("Csma2_test",CSMA1_ND.Get(2),true);
+        starN5.EnablePcapAll ("deleteme_test");
+        //starN5.EnablePcapAll ("star_test");
+        //CSMA2.EnablePcap("Csma2_test",CSMA1_ND.Get(2),true);
     }
 
     if (configuration == 1) {
@@ -243,15 +252,9 @@ main (int argc, char *argv[])
         Address sinkAddress1(InetSocketAddress(Ipv4Address::GetAny(), port1));
         PacketSinkHelper sinkHelper1("ns3::TcpSocketFactory", sinkAddress1);
         ApplicationContainer sinkApp = sinkHelper1.Install(star.GetHub());
-        sinkApp.Start(Seconds(1.0));
-        sinkApp.Stop(Seconds(16.0));
+        sinkApp.Start(Seconds(0.0));
+        sinkApp.Stop(Seconds(17.0));
 
-        // Sink n0
-        Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
-        PacketSinkHelper sinkHelper2("ns3::TcpSocketFactory", sinkAddress2);
-        sinkApp = sinkHelper2.Install(CSMA1_nodes.Get(0)); //Potrebbbe essere necessario un nuovo SinkApp
-        sinkApp.Start(Seconds(1.0));
-        sinkApp.Stop(Seconds(16.0));
 
         // OnOffHelper n9
         OnOffHelper onOffHelper1 ("ns3::TcpSocketFactory", Address ());
@@ -259,59 +262,124 @@ main (int argc, char *argv[])
         onOffHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
         onOffHelper1.SetAttribute("PacketSize",UintegerValue(2500));
 
+
+        // AppContainer n9
+        ApplicationContainer clientApps1;
+        AddressValue remoteAddress1 (InetSocketAddress (star.GetHubIpv4Address (2), port1));
+        onOffHelper1.SetAttribute("Remote", remoteAddress1);
+        clientApps1.Add(onOffHelper1.Install(CSMA2_nodes.Get(2)));
+
+        // Sink n0
+        Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
+        PacketSinkHelper sinkHelper2("ns3::TcpSocketFactory", sinkAddress2);
+        ApplicationContainer sinkApp2 = sinkHelper2.Install(CSMA1_nodes.Get(0));
+        sinkApp2.Start(Seconds(1.0));
+        sinkApp2.Stop(Seconds(16.0));
+
         // OnOffHelper n8
         OnOffHelper onOffHelper2 ("ns3::TcpSocketFactory", Address ());
         onOffHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
         onOffHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
-        onOffHelper1.SetAttribute("PacketSize",UintegerValue(5000));
+        onOffHelper2.SetAttribute("PacketSize",UintegerValue(5000));
 
-        // AppContainer n9
-        ApplicationContainer clientApps1;
-//        AddressValue remoteAddress1 (InetSocketAddress (CSMA2_interfaces.GetAddress(1), port1));;
-        AddressValue remoteAddress1 (InetSocketAddress (star.GetHubIpv4Address (2), port1));
-        onOffHelper1.SetAttribute("Remote", remoteAddress1);
-        clientApps1.Add(onOffHelper1.Install(CSMA2_nodes.Get(2)));
+        clientApps1.Start(Seconds(3.0));
+        clientApps1.Stop(Seconds(15.0));
         
         // AppContainer n8
         ApplicationContainer clientApps2;
-//        AddressValue remoteAddress2 (InetSocketAddress (CSMA2_interfaces.GetAddress(2), port2));;
         AddressValue remoteAddress2 (InetSocketAddress (CSMA1_interfaces.GetAddress(0), port2));
         onOffHelper2.SetAttribute("Remote", remoteAddress2);
         clientApps2.Add(onOffHelper2.Install(CSMA2_nodes.Get(1)));
 
-        clientApps1.Start(Seconds(3.0));
-        clientApps1.Stop(Seconds(15.0));
-
         clientApps2.Start(Seconds(2.0));
         clientApps2.Stop(Seconds(9.0));
+        
+		Ipv4GlobalRoutingHelper::PopulateRoutingTables();
+
 
        starN5.EnablePcapAll ("task1-configuration1-n5.pcap");
-       CSMA1.EnablePcap("task1-configuration1-n0.pcap",CSMA1_ND.Get(0)); //CSMA_1.EnablePcap();
-//      CSMA2.EnablePcap("Csma2_test",CSMA1_ND.Get(1),true);
-//       CSMA2.EnablePcap("Csma2_test",CSMA1_ND.Get(2),true);
+       CSMA1.EnablePcap("task1-configuration1-n0.pcap", CSMA1_ND.Get(0), true);
     }
 
     if (configuration == 2) {
-        NS_LOG_INFO ("Install internet stack on all nodes.");
-
+        // Configurazione EchoServer/Client sui nodi n2 <- n8
+        NS_LOG_INFO ("Configuring EchoServer/Client");
         UdpEchoServerHelper echoServer(63);
 
         ApplicationContainer serverApps = echoServer.Install(CSMA1_nodes.Get(2));
         serverApps.Start(Seconds(1.0));
-        serverApps.Stop(Seconds(10.0));
+        serverApps.Stop(Seconds(20.0));
 
+        //TODO: inviare 5 pacchetti a 3,4,7 e 9 secondi con testo dentro
         UdpEchoClientHelper echoClient(CSMA1_interfaces.GetAddress(2), 63);
         echoClient.SetAttribute("MaxPackets", UintegerValue(5));
-        echoClient.SetAttribute("Interval", TimeValue(Seconds(1.0))); //da cambiare
+        echoClient.SetAttribute("Interval", TimeValue(Seconds(2.0)));
         echoClient.SetAttribute("PacketSize", UintegerValue(2560));
     
         ApplicationContainer clientApps = echoClient.Install(CSMA2_nodes.Get(1));
-        clientApps.Start(Seconds(2.0));//da cambiare
-        clientApps.Stop(Seconds(10.0));//da cambiare
+        clientApps.Start(Seconds(3.0));
+        clientApps.Stop(Seconds(11.0));
 
         starN5.EnablePcapAll("star test");
         CSMA2.EnablePcap("csma2 test", CSMA2_ND.Get(1), true);
 
+        // Configurazione TCP sink e TCP onOffClient n5 <- n9
+        NS_LOG_INFO ("Configuring TCP sink on n5");
+        uint16_t port1 = 2300;
+        Address sinkAddress1(InetSocketAddress(Ipv4Address::GetAny(), port1));
+        PacketSinkHelper sinkHelper1("ns3::TcpSocketFactory", sinkAddress1);
+        ApplicationContainer sinkApp = sinkHelper1.Install(star.GetHub());
+        sinkApp.Start(Seconds (1.0));
+        sinkApp.Stop(Seconds (20.0));
+
+        // OnOffHelper n9
+        OnOffHelper onOffHelper1 ("ns3::TcpSocketFactory", Address ());
+        onOffHelper1.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+        onOffHelper1.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+        onOffHelper1.SetAttribute("PacketSize",UintegerValue(3000));
+
+
+        // AppContainer n9
+        ApplicationContainer clientApps1;
+        AddressValue remoteAddress1 (InetSocketAddress (star.GetHubIpv4Address (2), port1));
+        onOffHelper1.SetAttribute("Remote", remoteAddress1);
+        clientApps1.Add(onOffHelper1.Install(CSMA2_nodes.Get(2)));
+
+        clientApps1.Start(Seconds(3.0));
+        clientApps1.Stop(Seconds(9.0));
+
+        // Configurazione UDP sink e UDP OnOffClient n0 <- n8
+        NS_LOG_INFO ("Configuring TCP sink on n5");
+        uint16_t port2 = 7454;
+        Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
+        PacketSinkHelper sinkHelper2("ns3::UdpSocketFactory", sinkAddress2);
+        ApplicationContainer sinkApp2 = sinkHelper2.Install(CSMA1_nodes.Get(0));
+        sinkApp2.Start(Seconds (1.0));
+        sinkApp2.Stop(Seconds (20.0));
+
+        // OnOffHelper n8
+        OnOffHelper onOffHelper2 ("ns3::UdpSocketFactory", Address ());
+        onOffHelper2.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
+        onOffHelper2.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
+        onOffHelper2.SetAttribute("PacketSize",UintegerValue(3000));
+
+
+        // AppContainer n8
+        ApplicationContainer clientApps2;
+        AddressValue remoteAddress2 (InetSocketAddress (CSMA1_interfaces.GetAddress(0), port2));
+        onOffHelper2.SetAttribute("Remote", remoteAddress2);
+        clientApps2.Add(onOffHelper2.Install(CSMA2_nodes.Get(1)));
+
+        clientApps2.Start(Seconds(5.0));
+        clientApps2.Stop(Seconds(15.0));
+
+
+
+		Ipv4GlobalRoutingHelper::PopulateRoutingTables();
+
+
+       starN5.EnablePcapAll ("task1-configuration1-n5.pcap");
+       CSMA1.EnablePcap("task1-configuration1-n0.pcap", CSMA1_ND.Get(0), true);
     }
 
     
