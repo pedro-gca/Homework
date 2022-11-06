@@ -294,6 +294,7 @@ main (int argc, char *argv[])
         clientApps2.Start(Seconds(2.0));
         clientApps2.Stop(Seconds(9.0));
         
+        
 		Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
 
@@ -308,7 +309,7 @@ main (int argc, char *argv[])
 
         ApplicationContainer serverApps = echoServer.Install(CSMA1_nodes.Get(2));
         serverApps.Start(Seconds(1.0));
-        serverApps.Stop(Seconds(10.0));
+        serverApps.Stop(Seconds(15.0));
 
         UdpEchoClientHelper echoClient(CSMA1_interfaces.GetAddress(2), 63);
         echoClient.SetAttribute("MaxPackets", UintegerValue(5));
@@ -326,7 +327,7 @@ main (int argc, char *argv[])
         PacketSinkHelper sinkHelper1("ns3::TcpSocketFactory", sinkAddress1);
         ApplicationContainer sinkApp = sinkHelper1.Install(star.GetHub());
         sinkApp.Start(Seconds (3.0));
-        sinkApp.Stop(Seconds (9.0));
+        sinkApp.Stop(Seconds (14.0));
 
         // OnOffHelper n9
         OnOffHelper onOffHelper1 ("ns3::TcpSocketFactory", Address ());
@@ -341,13 +342,16 @@ main (int argc, char *argv[])
         onOffHelper1.SetAttribute("Remote", remoteAddress1);
         clientApps1.Add(onOffHelper1.Install(CSMA2_nodes.Get(2)));
 
+        clientApps1.Start(Seconds(3.0));
+        clientApps1.Stop(Seconds(9.0));
+
 
         // Configurazione UDP sink e UDP OnOffClient n0 <- n8
-        NS_LOG_INFO ("Configuring TCP sink on n5");
+        NS_LOG_INFO ("Configuring UDP sink on n0");
         uint16_t port2 = 7454;
         Address sinkAddress2(InetSocketAddress(Ipv4Address::GetAny(), port2));
         PacketSinkHelper sinkHelper2("ns3::UdpSocketFactory", sinkAddress2);
-        ApplicationContainer sinkApp2 = sinkHelper2.Install(star.GetHub());
+        ApplicationContainer sinkApp2 = sinkHelper2.Install(CSMA1_nodes.Get(0));
         sinkApp2.Start(Seconds (5.0));
         sinkApp2.Stop(Seconds (15.0));
 
@@ -364,15 +368,15 @@ main (int argc, char *argv[])
         onOffHelper2.SetAttribute("Remote", remoteAddress2);
         clientApps2.Add(onOffHelper2.Install(CSMA2_nodes.Get(1)));
 
+        clientApps2.Start(Seconds(5.0));
+        clientApps2.Stop(Seconds(15.0));
 
+		Ipv4GlobalRoutingHelper::PopulateRoutingTables();
 
+        // asks only for TCP, and we only have 1 TCP sink on n5
+       starN5.EnablePcapAll ("task1-configuration2-n5.pcap");
+       //CSMA1.EnablePcap("task1-configuration1-n0.pcap", CSMA1_ND.Get(0), true);
 
-
-	Ipv4GlobalRoutingHelper::PopulateRoutingTables();
-
-
-       starN5.EnablePcapAll ("task1-configuration1-n5.pcap");
-       CSMA1.EnablePcap("task1-configuration1-n0.pcap", CSMA1_ND.Get(0), true);
     }
 
     
